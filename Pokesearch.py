@@ -69,7 +69,7 @@ def pokesea():
         pokemon_type = [types ['type']['name'] for types in Datos_pokemon ['Tipo']]
         print(Datos_pokemon)
         print(pokemon_type)
-    return redirect(url_for('perfil'))  
+    return render_template('perfil.html', pokemon= Datos_pokemon) 
 
 def get_pokemon_data(url_pokemon=''):
     Pokemon_data = {
