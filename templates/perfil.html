@@ -15,14 +15,16 @@
   <title>Tu Pokemon</title>
   
 </head>
-
-<body style="background-image: url(css/pokemon.jpg); ">
-  <p style="text-align: center;">POKEMON</p>
-  {% for poke in pokemon %}
+<body style="background: cornflowerblue;" style="background-image: url(css/pokemon.jpg); ">
+  <p style="text-align: center;">POKEDESK Versión 1.0 Francisco Monroy</p>
   <tr>
-    <td>{{pokemon}}</td>
+    <td style="color: darkred;"><p style="text-align: center;">Id: {{pokemon['id']}}</p></td>
+    <td><p style="text-align: center;">Nombre de Pokémon:</p> <p style="text-align: center;">{{pokemon['Nombre']}}</p></td>
+    <td><p style="text-align: center;">Tamaño del Pokémon: {{pokemon['Tamaño']}}</p></td>
+    <td><p style="text-align: center;">Habilidades del Pokémon: {{pokemon['Habilidades']}}</p></td>
+    <td><p style="text-align: center;" >Tipo de Pokémon:{{pokemon['Tipo']}}</p></td>
+    <td><p style="text-align: center;">Peso del Pokémon: {{pokemon['Peso']}} </p></td>
   </tr>
-  {% endfor %}
 </body>
 
 </html>
