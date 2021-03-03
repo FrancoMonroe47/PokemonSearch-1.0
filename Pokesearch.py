@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_mysqldb import MySQL
 import requests
+
 
 app = Flask(__name__)
 
@@ -11,6 +12,7 @@ app.config ['MYSQL_DB']='francomonroy'
 mysql= MySQL(app)
 
 app.secret_key = 'mysecretkey'
+url_api="https://pokeapi.co/api/v2/pokemon/"
 
 @app.route('/')
 def index():
@@ -25,7 +27,8 @@ def registro():
         bd.execute('INSERT INTO usuarios(Nombre, Contraseña) VALUES(%s,%s)',
         (nombre_u, contraseña_u))
         mysql.connection.commit()
-        return 'Registrado con exito'
+        flash("Registrado con exito")
+        return redirect(url_for('index'))
         
 @app.route('/registrar', methods=['GET','POST'])
 def registrar():
@@ -33,37 +36,40 @@ def registrar():
 
 @app.route('/loggin', methods=['POST'])
 def loggin():
-    nombre_u = request.form ['nombre']
-    contraseña_u = request.form ['contraseña']
-    bd=mysql.connection.cursor()
-    busca_u = ("SELECT * FROM usuarios WHERE Nombre = ? AND Contraseña = ?")
-    bd.execute(busca_u, [(nombre_u), (contraseña_u)])
-    resul_u= bd.fetchall()
-    if resul_u:
-        flash('Bienvenido')
-        return redirect(url_for('index'))
-    else:
-        flash('Usuario/contraseña Incorrectos')
-        return redirect(url_for('logeo'))
+   if request.method == 'POST':
+        nombre_u = request.form ['nombre']
+        contraseña_u = request.form ['contraseña']
+        bd=mysql.connection.cursor()
+        bd.execute("SELECT Nombre FROM usuarios")
+        nombre_bd = bd.fetchone()
+        bd.execute("SELECT Contraseña FROM usuarios")
+        contraseña_bd = bd.fetchone()
+        print(contraseña_bd,nombre_bd)
+        if nombre_u == nombre_bd and contraseña_u == contraseña_bd:
+            mysql.connection.commit()
+            return 'bienvenido'
+        else:
+            flash('usuario/Contraseña incorrectos')
+            return redirect(url_for('login'))
 
-@app.route('/logeo', methods =['GET','POST'])
-def logeo():
-    return render_template('logeo.html')
+@app.route('/login', methods =['GET','POST'])
+def login():
+    return render_template('login.html')
 
 @app.route('/perfil')
 def perfil():
     return render_template('perfil.html')
 
-if __name__ == '__main__':
-    app.run(port= 443, debug=True)
-        
-url_api="https://pokeapi.co/api/v2/pokemon/"
-
-def pokesearch():
-    Nombre_pokemon = input("Nombre del pokemon ")
-    Url_Nombre_pokemon = url_api + Nombre_pokemon
-    Datos_pokemon= get_pokemon_data(Url_Nombre_pokemon)
-    print(Datos_pokemon)
+@app.route('/pokesea', methods=['GET','POST'])
+def pokesea():
+    if request.method == 'POST':
+        Nombre_pokemon = request.form ['pokemon']
+        Url_Nombre_pokemon = url_api + Nombre_pokemon
+        Datos_pokemon= get_pokemon_data(Url_Nombre_pokemon)
+        pokemon_type = [types ['type']['name'] for types in Datos_pokemon ['Tipo']]
+        print(Datos_pokemon)
+        print(pokemon_type)
+    return redirect(url_for('perfil'))  
 
 def get_pokemon_data(url_pokemon=''):
     Pokemon_data = {
@@ -86,4 +92,5 @@ def get_pokemon_data(url_pokemon=''):
     Pokemon_data ['Tipo'] = Datos_pokemon['types']
     return Pokemon_data
 
-    
+if __name__ == '__main__':
+    app.run(port= 443, debug=True)  

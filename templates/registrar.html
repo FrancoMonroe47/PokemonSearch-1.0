@@ -1,3 +1,10 @@
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for message in messages %}
+<p>{{ message }}</p>
+{% endfor %}
+{% endif %}
+{% endwith %}
 <!DOCTYPE html>
 <html>
 
@@ -11,6 +18,7 @@
 </head>
 
 <body>
+
   <section class="hero is-info is-fullheight">
     <div class="hero-body">
       <div class="container">
